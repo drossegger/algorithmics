@@ -34,6 +34,7 @@ private:
   bool isTree();
   bool isTreeHelper(int node, bool*& visited, bool**& mat);
 
+  void printX();
 public:
 
 	kMST_ILP( Instance& _instance, string _model_type, int _k );

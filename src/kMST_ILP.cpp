@@ -39,6 +39,7 @@ void kMST_ILP::solve()
 		cout << "Branch-and-Bound nodes: " << cplex.getNnodes() << "\n";
 		cout << "Objective value: " << cplex.getObjValue() << "\n";
 		cout << "CPU time: " << Tools::CPUtime() << "\n\n";
+    printX();
 		cout << "Solution is " << (isTree() ? "valid" : "invalid") << "\n\n";
 	}
 	catch( IloException& e ) {
@@ -79,7 +80,6 @@ void kMST_ILP::modelMCF()
 void kMST_ILP::modelMTZ()
 {
 	//x
-	IloBoolVarArray x(env,m);
 	for(int i=0;i<m;i++){
 		stringstream myname;
 		myname << "x_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
@@ -189,6 +189,9 @@ void kMST_ILP::modelMTZ()
 	for (int i=0;i<n;i++){
 		co12+=u[i];
 	}
+  
+
+  cout << model << endl;
 	model.add(co12 == (k*(k+1))/2);
 	co12.end();
 }
@@ -201,6 +204,8 @@ bool kMST_ILP::isTreeHelper(int node, bool*& visited, bool**& mat) {
   bool ret = true;
 
   for (int i = 0; i < m and ret; i++) {
+    if(i == node) continue;
+
     if(mat[node][i]) {
       if(visited[i]) {
         return false;
@@ -215,12 +220,15 @@ bool kMST_ILP::isTreeHelper(int node, bool*& visited, bool**& mat) {
 bool kMST_ILP::isTree() {
   //helping variables
   bool** mat = new bool*[m];
-  for(u_int i = 0; i < m; ++i) {
+  for(int i = 0; i < m; ++i) {
     mat[i] = new bool[m];
+    memset(mat[i], 0, sizeof(bool) * m);
+
   }
   bool* visited = new bool[m];
+  memset(visited, 0, sizeof(bool) * m);
 
-	for(u_int i=0;i<m;i++){
+	for(int i=0;i<m;i++){
     int from = instance.edges.at(i).v1;
     int to = instance.edges.at(i).v2;
 		mat[from][to] = cplex.getValue(x[i]);
@@ -233,7 +241,7 @@ bool kMST_ILP::isTree() {
 
   //clean up
   delete[] visited;
-  for(u_int i = 0; i < m; ++i) {
+  for(int i = 0; i < m; ++i) {
     delete [] mat[i];
   }
   delete [] mat;
@@ -241,10 +249,23 @@ bool kMST_ILP::isTree() {
 	return valid;
 }
 
+void kMST_ILP::printX() {
+  cout << "Decision Variables:" << endl;
+	for(int i=0;i<m;i++){
+    int from = instance.edges.at(i).v1;
+    int to = instance.edges.at(i).v2;
+    try{
+      cout << "x_" << from << "," << to << " (" << i << "): \t" << cplex.getIntValue(x[i]) << endl;
+    }catch (IloAlgorithm::NotExtractedException& e) {
+      cout << "x_" << from << "," << to << " (" << i << "): \t not used by solution" << endl;
+    }
+  }
+}
+
 kMST_ILP::~kMST_ILP()
 {
-	// free global CPLEX resources
-	cplex.end();
-	model.end();
-	env.end();
+  // free global CPLEX resources
+  cplex.end();
+  model.end();
+  env.end();
 }
