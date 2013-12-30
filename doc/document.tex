@@ -29,6 +29,10 @@ There must be exactly one arc from the artificial vertex $0$ to any other vertex
 \begin{equation}
 	\sum_{j>0} x_{0j} = 1
 \end{equation}
+$u_i$ must be between $0$ and $k$ since $k$ vertices are in the tree.
+\begin{equation}
+0\leq u_i \leq k \quad \forall i=0,\dots,n
+\end{equation}
 By the tree property $n=m+1$ the number of edges in the tree must be $k$.
 \begin{equation}
 	\sum_{i\geq0} \sum_{j\geq0,j\not =i} x_{ij} = k
