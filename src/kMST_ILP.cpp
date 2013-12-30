@@ -1,7 +1,7 @@
 #include "kMST_ILP.h"
 
 kMST_ILP::kMST_ILP( Instance& _instance, string _model_type, int _k ) :
-	instance( _instance ), model_type( _model_type ), k( _k ), x(env,instance.n_edges)
+	instance( _instance ), model_type( _model_type ), k( _k ), x(env,2*instance.n_edges)
 {
 	n = instance.n_nodes;
 	m = instance.n_edges;
@@ -80,7 +80,6 @@ void kMST_ILP::modelMCF()
 void kMST_ILP::modelMTZ()
 {
 	//x
-	IloBoolVarArray x(env,2*m);
 	for(int i=0;i<m;i++){
 		stringstream myname;
 		myname << "x_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
