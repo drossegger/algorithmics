@@ -236,8 +236,8 @@ bool kMST_ILP::isTree() {
   for(int i = 0; i < m; ++i) {
     mat[i] = new bool[m];
     memset(mat[i], 0, sizeof(bool) * m);
-
   }
+
   bool* visited = new bool[m];
   memset(visited, 0, sizeof(bool) * m);
 
@@ -245,6 +245,7 @@ bool kMST_ILP::isTree() {
     int from = instance.edges.at(i).v1;
     int to = instance.edges.at(i).v2;
 		mat[from][to] = cplex.getValue(x[i]);
+		mat[to][from] = cplex.getValue(x[i+m]);
 	}
 
   validEdgeCounter = 0;
@@ -271,6 +272,11 @@ void kMST_ILP::printX() {
       cout << "x_" << from << "," << to << " (" << i << "): \t" << cplex.getIntValue(x[i]) << endl;
     }catch (IloAlgorithm::NotExtractedException& e) {
       cout << "x_" << from << "," << to << " (" << i << "): \t not used by solution" << endl;
+    }
+    try{
+      cout << "x_" << to << "," << from << " (" << i << "): \t" << cplex.getIntValue(x[i+m]) << endl;
+    }catch (IloAlgorithm::NotExtractedException& e) {
+      cout << "x_" << to << "," << from << " (" << i << "): \t not used by solution" << endl;
     }
   }
 }
