@@ -24,10 +24,15 @@ private:
 	IloEnv env;
 	IloModel model;
 	IloCplex cplex;
+  IloBoolVarArray x;
 
 	void modelSCF();
 	void modelMCF();
 	void modelMTZ();
+
+  int  validEdgeCounter = 0;
+  bool isTree();
+  bool isTreeHelper(int node, bool*& visited, bool**& mat);
 
 public:
 

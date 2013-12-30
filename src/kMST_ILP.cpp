@@ -1,7 +1,7 @@
 #include "kMST_ILP.h"
 
 kMST_ILP::kMST_ILP( Instance& _instance, string _model_type, int _k ) :
-	instance( _instance ), model_type( _model_type ), k( _k )
+	instance( _instance ), model_type( _model_type ), k( _k ), x(env,instance.n_edges)
 {
 	n = instance.n_nodes;
 	m = instance.n_edges;
@@ -39,6 +39,7 @@ void kMST_ILP::solve()
 		cout << "Branch-and-Bound nodes: " << cplex.getNnodes() << "\n";
 		cout << "Objective value: " << cplex.getObjValue() << "\n";
 		cout << "CPU time: " << Tools::CPUtime() << "\n\n";
+		cout << "Solution is " << (isTree() ? "valid" : "invalid") << "\n\n";
 	}
 	catch( IloException& e ) {
 		cerr << "kMST_ILP: exception " << e << "\n";
@@ -78,7 +79,6 @@ void kMST_ILP::modelMCF()
 void kMST_ILP::modelMTZ()
 {
 	//x
-	IloBoolVarArray x(env,m);
 	for(u_int i=0;i<m;i++){
 		stringstream myname;
 		myname << "x_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
@@ -98,14 +98,68 @@ void kMST_ILP::modelMTZ()
 
 	}
 
+IloExpr myExpr(env);
+myExpr += x[1];
+myExpr += x[2];
+model.add(myExpr >= 1);
+myExpr.end(); // IMPORTANT to free memory
+
 	//objective function
 	IloExpr objfunc(env);
 	for (u_int i=0;i<m; i++){
 		objfunc +=x[i]*c[i];
 	}
-	objfunc.end();
 	model.add(IloMinimize(env,objfunc));
+	objfunc.end();
 
+}
+
+
+bool kMST_ILP::isTreeHelper(int node, bool*& visited, bool**& mat) {
+  visited[node] = true;
+  ++validEdgeCounter;
+
+  bool ret = true;
+
+  for (u_int i = 0; i < m and ret; i++) {
+    if(mat[node][i]) {
+      if(visited[i]) {
+        return false;
+      }
+      ret = ret and isTreeHelper(i, visited, mat);
+    }
+  }
+   
+  return ret;
+}
+
+bool kMST_ILP::isTree() {
+  //helping variables
+  bool** mat = new bool*[m];
+  for(u_int i = 0; i < m; ++i) {
+    mat[i] = new bool[m];
+  }
+  bool* visited = new bool[m];
+
+	for(u_int i=0;i<m;i++){
+    int from = instance.edges.at(i).v1;
+    int to = instance.edges.at(i).v2;
+		mat[from][to] = cplex.getValue(x[i]);
+	}
+
+  validEdgeCounter = 0;
+  bool valid = isTreeHelper(0, visited, mat); 
+
+  valid = valid and (validEdgeCounter == k+1);
+
+  //clean up
+  delete[] visited;
+  for(u_int i = 0; i < m; ++i) {
+    delete [] mat[i];
+  }
+  delete [] mat;
+   
+	return validEdgeCounter;
 }
 
 kMST_ILP::~kMST_ILP()
