@@ -168,13 +168,13 @@ void kMST_ILP::modelMTZ()
 		model.add(co7 <= 1);
 		co7.end();
 	}
-	/*//(8)
+	//(8)
 	IloExpr co8(env);
 	for(int i=0;i<n;i++){
 		co8+=v[i];
 	}
 	model.add(co8==k);
-	co8.end();*/
+	co8.end();
 	//(9)
 	for(int i=0;i<n;i++){
 		IloExpr co9(env);

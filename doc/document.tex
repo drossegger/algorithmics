@@ -13,13 +13,13 @@
 \begin{document}
 \maketitle
 \section{MTZ Formulation}
-Let $x_{ij}=1$ if $e_{ij}\in E$ is in the Spanning Tree, else $x_{ij}=0$. The objective function is the same as in the other formulations
+Let $x_{ij}=1$ if $e_{ij}\in E$ is in the Spanning Tree, else $x_{ij}=0$. Since the graph is undirected, for every edge there are to $x$, $x_ij$ and $x_ji$. The objective function is the same as in the other formulations
 \begin{equation}
 	\min{\sum_i \sum_{j\not=i} c_{ij}x_{ij}}
 \end{equation}
 For the Miller-Tucker-Zemlin formulation an order $u_i$ is introduced, it ensures that there is no cycle.
 \begin{equation}
-	kx_{ij} + u_i \leq u_j + (k-1) \quad \forall i,j=0,\dots,n
+x_{ij} + u_i \leq u_j + k*(1-x_{ij}) \quad \forall i,j=0,\dots,n
 \end{equation}
 The start vertex must be the artificial vertex $0$.
 \begin{equation}
