@@ -13,13 +13,43 @@
 \begin{document}
 \maketitle
 \section{MTZ Formulation}
-Let $x_{ij}=1$ if $e_{ij}\in E$ is in the Spanning Tree, else $x_{ij}=0$.
+Let $x_{ij}=1$ if $e_{ij}\in E$ is in the Spanning Tree, else $x_{ij}=0$. The objective function is the same as in the other formulations
+\begin{equation}
+	\min{\sum_i \sum_{j\not=i} c_{ij}x_{ij}}
+\end{equation}
+For the Miller-Tucker-Zemlin formulation an order $u_i$ is introduced, it ensures that there is no cycle.
+\begin{equation}
+	kx_{ij} + u_i \leq u_j + (k-1) \quad \forall i,j=0,\dots,n
+\end{equation}
+The start vertex must be the artificial vertex $0$.
+\begin{equation}
+	u_0=0
+\end{equation}
+There must be exactly one arc from the artificial vertex $0$ to any other vertex in the tree.
+\begin{equation}
+	\sum_{j>0} x_{0j} = 1
+\end{equation}
+By the tree property $n=m+1$ the number of edges in the tree must be $k$.
+\begin{equation}
+	\sum_{i\geq0} \sum_{j\geq0,j\not =i} x_{ij} = k
+\end{equation}
+Since there is an order, we are talking about arcs and for every vertex there must be at most one incoming arc.
+\begin{equation}
+	\sum_{i>0} x_{ij}\leq 1 \quad \forall j=1,\dots,n
+\end{equation}
+Let $v_i=1$ if vertex $i \in k-MST$ and $0$ otherwise.
+The number of vertices in the tree must be $k$.
+\begin{equation}
+	\sum_{i>0}v_i=k
+\end{equation}
+Only $v_i \in k-MST$ must have $u_i>0$.
+\begin{equation}
+	u_i \leq k*v_i	\quad \forall i=1,\dots,n
+\end{equation}
+Whenever an arc is chosen, the incident vertices must have an order.
 \begin{align}
-	&\min{\sum_i \sum_{j\not =i} c_{ij}x_{ij}}\\
-	s.t. \sum_{i} x_{ij} &= 1 \quad \forall j=1,\dots,n \\
-	nx_{ij} + u_i &\leq u_j + (n-1)\quad \forall i,j=1,\dots,n\\
-	\sum_i\sum_{j\not =i} x_{ij} &= k \\
-	\sum_j x_{0j}&=1
+	x_{ij} &\leq u_i \\
+	x_{ij} &\leq u_j 
 \end{align}
 \end{document}
 
