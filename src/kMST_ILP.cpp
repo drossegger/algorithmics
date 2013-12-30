@@ -98,51 +98,12 @@ void kMST_ILP::modelMTZ()
 		u[i]=IloIntVar(env, myname.str().c_str());
 
 	}
-
-	//Constraint (4)
-	IloExpr co4(env);
-	for (int i=0;i<m;i++){
-		co4+=x[i];
-	}
-	model.add(co4 == k);
-	co4.end();
-
-	//Constraint (2)
-	
-	for (int i=0;i<n;i++){
-		IloExpr co2(env);
-		for (int j=0;j<m;j++){
-			if(instance.edges.at(j).v1==i or instance.edges.at(j).v2==i)
-				co2+=x[j];
-		}
-		model.add(co2 == 1);
-		co2.end();
-	}
-
-	//Constraint (5)
-	
-	IloExpr co5(env);
-	for (u_int i=0;i<m;i++){
-		if(instance.edges.at(i).v1==0 or instance.edges.at(i).v2==0){
-			co5+=x[i];
-		}
-	}
-	model.add(co5 == 1);
-	co5.end();
-
-	//Constraint (3)
-	
-	for (u_int i=0;i<m;i++){
-		IloExpr co3_0(env);
-		co3_0+=n*x[i];
-		co3_0+=u[instance.edges.at(i).v1];
-
-		IloExpr co3_1(env);
-		co3_1+=u[instance.edges.at(i).v2];
-		co3_1+=n-1;
-		model.add(co3_0 <= co3_1);
-		co3_0.end();
-		co3_1.end();
+	//v
+	IloBoolVarArray v(env,n);
+	for(int i=0;i<n;i++){
+		stringstream myname;
+		myname << "v_" << i;
+		v[i] = IloBoolVar(env, myname.str().c_str());
 	}
 
 	//objective function (1)
@@ -152,6 +113,84 @@ void kMST_ILP::modelMTZ()
 	}
 	model.add(IloMinimize(env,objfunc));
 	objfunc.end();
+
+  //(2)
+	for (int i=0;i<m;i++){
+		IloExpr co3_0(env);
+		co3_0+=k*x[i];
+		co3_0+=u[instance.edges.at(i).v1];
+
+		IloExpr co3_1(env);
+		co3_1+=u[instance.edges.at(i).v2];
+		co3_1+=k-1;
+		model.add(co3_0 <= co3_1);
+		co3_0.end();
+		co3_1.end();
+	}
+	//(3)
+	IloExpr co3(env);
+	co3=u[0];
+	model.add(co3==0);
+	co3.end();
+
+	//(4)
+	IloExpr co4(env);
+	for (int i=0;i<m;i++){
+		if(instance.edges.at(i).v1==0 or instance.edges.at(i).v2==0){
+			co4+=x[i];
+		}
+	}
+	model.add(co4 == 1);
+	co4.end();
+	//(5)	
+	for (int i=0;i<n;i++){
+		model.add(0<=u[i]);
+		model.add(u[i]<=k);
+	}
+
+	//(6)
+	IloExpr co6(env);
+	for (int i=0;i<m;i++){
+				co6+=x[i];
+	}
+	model.add(co6 == k);
+	co6.end();
+
+	//(7)
+	for(int i=0;i<n;i++){
+		IloExpr co7(env);
+		for(int j=0;j<m;j++){
+			if(instance.edges.at(j).v2==i)
+				co7+=x[j];
+		}
+		model.add(co7 <= 1);
+		co7.end();
+	}
+	//(8)
+	IloExpr co8(env);
+	for(int i=1;i<n;i++){
+		co8+=v[i];
+	}
+	model.add(co8==k);
+	co8.end();
+	//(9)
+	for(int i=1;i<n;i++){
+		model.add(u[i]<=k*v[i]);
+	}
+	//(10)-(11)
+	for(int i=0;i<m;i++){
+		if(instance.edges.at(i).v1!=0)
+		model.add(x[i]<=u[instance.edges.at(i).v1]);
+		if(instance.edges.at(i).v2!=0)
+		model.add(x[i]<=u[instance.edges.at(i).v2]);
+	}
+	//(12)
+	IloExpr co12(env);
+	for (int i=0;i<n;i++){
+		co12+=u[i];
+	}
+	model.add(co12 == (k*(k+1))/2);
+	co12.end();
 }
 
 
