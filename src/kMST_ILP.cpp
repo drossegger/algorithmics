@@ -199,7 +199,7 @@ bool kMST_ILP::isTree() {
   }
   delete [] mat;
    
-	return validEdgeCounter;
+	return valid;
 }
 
 kMST_ILP::~kMST_ILP()
