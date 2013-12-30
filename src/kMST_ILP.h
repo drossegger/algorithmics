@@ -19,7 +19,7 @@ private:
 	string model_type;
 	int k;
 	// number of edges and nodes including root node and root edges
-	unsigned int m, n;
+	int m, n;
 
 	IloEnv env;
 	IloModel model;

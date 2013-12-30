@@ -79,33 +79,78 @@ void kMST_ILP::modelMTZ()
 {
 	//x
 	IloBoolVarArray x(env,m);
-	for(u_int i=0;i<m;i++){
+	for(int i=0;i<m;i++){
 		stringstream myname;
 		myname << "x_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
 		x[i]=IloBoolVar(env,myname.str().c_str());
 	}
 	//c
 	int c[m];
-	for(u_int i=0;i<m;i++){
+	for(int i=0;i<m;i++){
 		c[i]=instance.edges.at(i).weight;
 	}
 	//u
 	IloIntVarArray u(env, n);
-	for(u_int i=0;i<n;i++){
+	for(int i=0;i<n;i++){
 		stringstream myname;
 		myname << "u_" << i;
 		u[i]=IloIntVar(env, myname.str().c_str());
 
 	}
 
-	//objective function
+	//objective function (1)
 	IloExpr objfunc(env);
-	for (u_int i=0;i<m; i++){
+	for (int i=0;i<m; i++){
 		objfunc +=x[i]*c[i];
 	}
-	objfunc.end();
 	model.add(IloMinimize(env,objfunc));
+	objfunc.end();
+	
+	//Constraint (4)
+	IloExpr co4(env);
+	for (int i=0;i<m;i++){
+		co4+=x[i];
+	}
+	model.add(co4 == k);
+	co4.end();
 
+	//Constraint (2)
+	
+	for (int i=0;i<n;i++){
+		IloExpr co2(env);
+		for (int j=0;j<m;j++){
+			if(instance.edges.at(j).v1==i or instance.edges.at(j).v2==i)
+				co2+=x[j];
+		}
+		model.add(co2 == 1);
+		co2.end();
+	}
+
+	//Constraint (5)
+	
+	IloExpr co5(env);
+	for (u_int i=0;i<m;i++){
+		if(instance.edges.at(i).v1==0 or instance.edges.at(i).v2==0){
+			co5+=x[i];
+		}
+	}
+	model.add(co5 == 1);
+	co5.end();
+
+	//Constraint (3)
+	
+	for (u_int i=0;i<m;i++){
+		IloExpr co3_0(env);
+		co3_0+=n*x[i];
+		co3_0+=u[instance.edges.at(i).v1];
+
+		IloExpr co3_1(env);
+		co3_1+=u[instance.edges.at(i).v2];
+		co3_1+=n-1;
+		model.add(co3_0 <= co3_1);
+		co3_0.end();
+		co3_1.end();
+	}
 }
 
 kMST_ILP::~kMST_ILP()
