@@ -17,7 +17,7 @@ public:
 
 	struct Edge
 	{
-		unsigned int v1, v2;
+		int v1, v2;
 		int weight;
 	};
 

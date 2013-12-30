@@ -24,11 +24,17 @@ private:
 	IloEnv env;
 	IloModel model;
 	IloCplex cplex;
+  IloBoolVarArray x;
 
 	void modelSCF();
 	void modelMCF();
 	void modelMTZ();
 
+  int  validEdgeCounter = 0;
+  bool isTree();
+  bool isTreeHelper(int node, bool*& visited, bool**& mat);
+
+  void printX();
 public:
 
 	kMST_ILP( Instance& _instance, string _model_type, int _k );
