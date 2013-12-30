@@ -1,0 +1,26 @@
+%        File: 
+%     Created: Sam Nov 03 06:00  2012 C
+% Last Change: Sam Nov 03 06:00  2012 C
+%
+\documentclass[a4paper]{article}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+
+\title{Algorithmics WS13/14, Programming Exercise}
+\author{Dino Rossegger, Markus Scherer}
+\date{\today}
+\begin{document}
+\maketitle
+\section{MTZ Formulation}
+Let $x_{ij}=1$ if $e_{ij}\in E$ is in the Spanning Tree, else $x_{ij}=0$.
+\begin{align}
+	&\min{\sum_i \sum_{j\not =i} c_{ij}x_{ij}}\\
+	s.t. \sum_{i} x_{ij} &= 1 \quad \forall j=1,\dots,n \\
+	nx_{ij} + u_i &\leq u_j + (n-1)\quad \forall i,j=1,\dots,n\\
+	\sum_i\sum_{j\not =i} x_{ij} &= k \\
+	\sum_j x_{0j}&=1
+\end{align}
+\end{document}
+
+
