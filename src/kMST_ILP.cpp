@@ -77,9 +77,35 @@ void kMST_ILP::modelMCF()
 
 void kMST_ILP::modelMTZ()
 {
-	// ++++++++++++++++++++++++++++++++++++++++++
-	// TODO build Miller-Tucker-Zemlin model
-	// ++++++++++++++++++++++++++++++++++++++++++
+	//x
+	IloBoolVarArray x(env,m);
+	for(u_int i=0;i<m;i++){
+		stringstream myname;
+		myname << "x_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
+		x[i]=IloBoolVar(env,myname.str().c_str());
+	}
+	//c
+	int c[m];
+	for(u_int i=0;i<m;i++){
+		c[i]=instance.edges.at(i).weight;
+	}
+	//u
+	IloIntVarArray u(env, n);
+	for(u_int i=0;i<n;i++){
+		stringstream myname;
+		myname << "u_" << i;
+		u[i]=IloIntVar(env, myname.str().c_str());
+
+	}
+
+	//objective function
+	IloExpr objfunc(env);
+	for (u_int i=0;i<m; i++){
+		objfunc +=x[i]*c[i];
+	}
+	objfunc.end();
+	model.add(IloMinimize(env,objfunc));
+
 }
 
 kMST_ILP::~kMST_ILP()
