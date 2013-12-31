@@ -70,27 +70,35 @@ void kMST_ILP::modelSCF()
 		stringstream myname;
 		myname << "x_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
 		x[i]=IloBoolVar(env,myname.str().c_str());
+		
+		stringstream myname2;
+		myname2 << "x_" << instance.edges.at(i).v2 << "," << instance.edges.at(i).v1;
+		x[i+m]=IloBoolVar(env,myname2.str().c_str());
 	}
 	//c
-	int c[m];
+	int c[2*m];
 	for(int i=0;i<m;i++){
 		c[i]=instance.edges.at(i).weight;
+
+		c[i+m]=instance.edges.at(i).weight;
 	}
 	//f
-	IloIntVarArray f(env, n);
-  int i=0;
-	for(auto it = instance.incidentEdges.at(0).begin(); it != instance.incidentEdges.at(0).end(); ++it) {
+	IloIntVarArray f(env,2*m);
+	for(int i=0;i<m;i++){
 		stringstream myname;
-    int from = 0;
-    int to = *it;
-		myname << "f_" << from << "," << to;
-    cout << myname.str() << endl;
-
+		myname << "f_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
 		f[i]=IloBoolVar(env,myname.str().c_str());
-    ++i;
-    IloExpr expr(env);
-    expr += f[i];
-    model.add(f == k-1);
+		
+		stringstream myname2;
+		myname2 << "f_" << instance.edges.at(i).v2 << "," << instance.edges.at(i).v1;
+		f[i+m]=IloBoolVar(env,myname2.str().c_str());
+	}
+	//v
+	IloBoolVarArray v(env,n);
+	for(int i=0;i<n;i++){
+		stringstream myname;
+		myname << "v_" << i;
+		v[i] = IloBoolVar(env, myname.str().c_str());
 	}
 
 	//objective function (1)
@@ -100,6 +108,92 @@ void kMST_ILP::modelSCF()
 	}
 	model.add(IloMinimize(env,objfunc));
 	objfunc.end();
+
+  //(2)
+	IloExpr co2(env);
+	for(int i=0;i<m;i++){
+		co2 += x[i] + x[i+m];
+	}
+  model.add(co2 == k);
+  co2.end();
+
+  //(3)
+	IloExpr co3(env);
+	for(int i=0;i<n;i++){
+		co3 += v[i];
+	}
+  model.add(co3 == k);
+  co3.end();
+
+  //(4)
+	IloExpr co4(env); 
+	for (int i=0;i<m;i++){ 
+		if(instance.edges.at(i).v1==0){ 
+			co4+=x[i]; 
+		}
+		if(instance.edges.at(i).v2==0){
+			co4+=x[i+m];
+		}
+	}
+	model.add(co4 == 1);
+	co4.end();
+
+  //(5) and (6)
+	for (int k=0;k<m;k++){ 
+    const int i = instance.edges.at(k).v1;
+    const int j = instance.edges.at(k).v2;
+    model.add(x[k] <= v[i]);
+    model.add(x[k] <= v[j]);
+	}
+
+  //(7)
+	for (int k=0;k<m;k++){ 
+    const int i = instance.edges.at(k).v1;
+    const int j = instance.edges.at(k).v2;
+
+    model.add(v[i] + x[k] + x[k+m] <= v[j] + 1);
+	}
+
+  //(8)
+	for (int i=0;i<m;i++){ 
+    model.add(0 <= f[i] <= k);
+    model.add(0 <= f[i+m] <= k);
+	}
+
+  //(9)
+	IloExpr co9(env); 
+	for (int i=0;i<m;i++){ 
+		if(instance.edges.at(i).v1==0){ 
+			co9+=f[i]; 
+		}
+		if(instance.edges.at(i).v2==0){
+			co9+=f[i+m];
+		}
+	}
+	model.add(co9 == k);
+	co9.end();
+
+//  //(10)
+//	IloExpr co10(env); 
+//  {
+//    auto it = instance.incidentEdges.begin();
+//    ++it; //skip first element
+//      for (; it != instance.incidentEdges.end(); ++it) { 
+//        if(instance.edges.at(i).v1==0){ 
+//          co9+=f[i]; 
+//        }
+//        if(instance.edges.at(i).v2==0){
+//          co9+=f[i+m];
+//        }
+//      }
+//  }
+//	co10.end();
+
+  // (11)
+  for (int i=0;i<m;i++) { 
+    model.add(f[i] <= k * x[i]);
+    model.add(f[i+m] <= k * x[i+m]);
+  }
 }
 
 void kMST_ILP::modelMCF()
