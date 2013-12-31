@@ -191,9 +191,15 @@ void kMST_ILP::modelSCF()
 
   // (11)
   for (int i=0;i<m;i++) { 
+    if(instance.edges.at(k).v1 == instance.edges.at(k).v2) {
+      continue;
+    }
+
     model.add(f[i] <= k * x[i]);
     model.add(f[i+m] <= k * x[i+m]);
   }
+
+  cout << model << endl;
 }
 
 void kMST_ILP::modelMCF()
