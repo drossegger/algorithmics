@@ -87,11 +87,11 @@ void kMST_ILP::modelSCF()
 	for(int i=0;i<m;i++){
 		stringstream myname;
 		myname << "f_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
-		f[i]=IloBoolVar(env,myname.str().c_str());
+		f[i]=IloIntVar(env,myname.str().c_str());
 		
 		stringstream myname2;
 		myname2 << "f_" << instance.edges.at(i).v2 << "," << instance.edges.at(i).v1;
-		f[i+m]=IloBoolVar(env,myname2.str().c_str());
+		f[i+m]=IloIntVar(env,myname2.str().c_str());
 	}
 	//v
 	IloBoolVarArray v(env,n);
@@ -105,6 +105,7 @@ void kMST_ILP::modelSCF()
 	IloExpr objfunc(env);
 	for (int i=0;i<m; i++){
 		objfunc +=x[i]*c[i];
+		objfunc +=x[i+m]*c[i];
 	}
 	model.add(IloMinimize(env,objfunc));
 	objfunc.end();
@@ -119,7 +120,7 @@ void kMST_ILP::modelSCF()
 
   //(3)
 	IloExpr co3(env);
-	for(int i=0;i<n;i++){
+	for(int i=1;i<n;i++){
 		co3 += v[i];
 	}
   model.add(co3 == k);
@@ -130,8 +131,6 @@ void kMST_ILP::modelSCF()
 	for (int i=0;i<m;i++){ 
 		if(instance.edges.at(i).v1==0){ 
 			co4+=x[i]; 
-		}
-		if(instance.edges.at(i).v2==0){
 			co4+=x[i+m];
 		}
 	}
@@ -142,22 +141,44 @@ void kMST_ILP::modelSCF()
 	for (int k=0;k<m;k++){ 
     const int i = instance.edges.at(k).v1;
     const int j = instance.edges.at(k).v2;
-    model.add(x[k] <= v[i]);
-    model.add(x[k] <= v[j]);
+    IloExpr co5_1 = x[k];
+    IloExpr co5_2 = v[i];
+    model.add(co5_1 <= co5_2);
+    co5_1.end();
+    co5_2.end();
+
+    IloExpr co6_1 = x[k];
+    IloExpr co6_2 = v[j];
+    model.add(co6_1 <= co6_2);
+    co6_1.end();
+    co6_2.end();
 	}
 
   //(7)
 	for (int k=0;k<m;k++){ 
     const int i = instance.edges.at(k).v1;
     const int j = instance.edges.at(k).v2;
+    IloExpr co7_1 = v[i];
+    co7_1 += x[k];
+    co7_1 += x[k+m];
 
-    model.add(v[i] + x[k] + x[k+m] <= v[j] + 1);
+    IloExpr co7_2 = v[j];
+    co7_2 += 1;
+    model.add(co7_1 <= co7_2);
+
+    co7_1.end();
+    co7_2.end();
 	}
 
   //(8)
 	for (int i=0;i<m;i++){ 
-    model.add(0 <= f[i] <= k);
-    model.add(0 <= f[i+m] <= k);
+    IloExpr co8_1 = f[i];
+    IloExpr co8_2 = f[i+m];
+    model.add(0 <= co8_1 <= k);
+    model.add(0 <= co8_2 <= k);
+
+    co8_1.end();
+    co8_2.end();
 	}
 
   //(9)
@@ -174,20 +195,28 @@ void kMST_ILP::modelSCF()
 	co9.end();
 
 //  //(10)
-//	IloExpr co10(env); 
-//  {
-//    auto it = instance.incidentEdges.begin();
-//    ++it; //skip first element
-//      for (; it != instance.incidentEdges.end(); ++it) { 
-//        if(instance.edges.at(i).v1==0){ 
-//          co9+=f[i]; 
-//        }
-//        if(instance.edges.at(i).v2==0){
-//          co9+=f[i+m];
-//        }
-//      }
-//  }
-//	co10.end();
+  for(int i=1; i < n; i++) {
+		IloNumExpr co10_1(env);
+		IloNumExpr co10_2(env);
+
+		for(auto it=instance.incidentEdges.at(i).begin(); it != instance.incidentEdges.at(i).end(); it++) {
+			if(instance.edges.at(*it).v1 == i) {	// outgoing edge
+				co10_1 -= f[*it];
+				co10_1 += f[(*it)+m];
+
+				co10_2 += f[(*it)+m];
+			} else {	// incoming edge
+				co10_1 += f[*it];
+				co10_1 -= f[(*it)+m];
+
+				co10_2 += f[*it];
+			}
+		}
+		model.add(co10_1 == IloMin(1,co10_2));
+
+		co10_1.end();
+		co10_2.end();
+	}
 
   // (11)
   for (int i=0;i<m;i++) { 
@@ -195,8 +224,14 @@ void kMST_ILP::modelSCF()
       continue;
     }
 
-    model.add(f[i] <= k * x[i]);
-    model.add(f[i+m] <= k * x[i+m]);
+    IloExpr co11_1 = f[i];
+    IloExpr co11_2= f[i+m];
+
+    model.add(co11_1 <= k * x[i]);
+    model.add(co11_2 <= k * x[i+m]);
+
+    co11_1.end();
+    co11_2.end();
   }
 
   cout << model << endl;
