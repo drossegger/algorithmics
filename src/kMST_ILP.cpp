@@ -65,9 +65,41 @@ void kMST_ILP::setCPLEXParameters()
 
 void kMST_ILP::modelSCF()
 {
-	// ++++++++++++++++++++++++++++++++++++++++++
-	// TODO build single commodity flow model
-	// ++++++++++++++++++++++++++++++++++++++++++
+	//x
+	for(int i=0;i<m;i++){
+		stringstream myname;
+		myname << "x_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
+		x[i]=IloBoolVar(env,myname.str().c_str());
+	}
+	//c
+	int c[m];
+	for(int i=0;i<m;i++){
+		c[i]=instance.edges.at(i).weight;
+	}
+	//f
+	IloIntVarArray f(env, n);
+  int i=0;
+	for(auto it = instance.incidentEdges.at(0).begin(); it != instance.incidentEdges.at(0).end(); ++it) {
+		stringstream myname;
+    int from = 0;
+    int to = *it;
+		myname << "f_" << from << "," << to;
+    cout << myname.str() << endl;
+
+		f[i]=IloBoolVar(env,myname.str().c_str());
+    ++i;
+    IloExpr expr(env);
+    expr += f[i];
+    model.add(f == k-1);
+	}
+
+	//objective function (1)
+	IloExpr objfunc(env);
+	for (int i=0;i<m; i++){
+		objfunc +=x[i]*c[i];
+	}
+	model.add(IloMinimize(env,objfunc));
+	objfunc.end();
 }
 
 void kMST_ILP::modelMCF()
