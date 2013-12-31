@@ -73,6 +73,23 @@ For every edge $e \in E$ two arcs are introduced. $x_ij$ is $1$ if it is in the 
 	f_{i,j}\leq kx_{i,j}
 \end{align}
 
-\end{document}
+\section{MCF Formulation}
+\begin{equation}
+	\min \sum_{i>0}{ \sum_{j>0,j\not =i}{x_{ij}c_{ij}}}
+\end{equation}
+\begin{align}
+	\sum_{(i,j)} x_{ij} = k\\
+	\sum_{i>0}v_i =k \\
+	\sum_{j>0} x_{0j}=1\\
+	x_{ij} \leq v_i\\
+	x_{ij} \leq v_i\\
+	v_i + x_{ij} + x_{ji} \leq v_j + 1\\
+	\sum_{j>0} f_{0j}^l \leq 1 \quad \forall l\in N\setminus\{0\}\\
+	\sum_{i,i\not =l} f_{il}^l \leq 1 \quad \forall l\in N\setminus\{0\}\\
+	0\leq f_{ij}^l \leq x_{i,j}\\
+	\sum_{i,i\not = j}f_{ij}^l - \sum_{i,i\not = j} f_{ji}^l =0 \quad \forall j, l\in N\setminus\{0\}, j\not =l \\
+	\sum_{l=1}^N \sum_{(i,l)} f_{i,l}^l =k
+\end{align}
 
+\end{document}
 
