@@ -55,6 +55,24 @@ Whenever an arc is chosen, the incident vertices must have an order.
 	x_{ij} &\leq u_i \\
 	x_{ij} &\leq u_j 
 \end{align}
+\section{SCF Formulation}
+For every edge $e \in E$ two arcs are introduced. $x_ij$ is $1$ if it is in the MST, $0$ otherwise.
+\begin{equation}
+	\min \sum_{i>0}{ \sum_{j>0,j\not =i}{x_{ij}c_{ij}}}
+\end{equation}
+\begin{align}
+	\sum_{(i,j)} x_{ij} = k\\
+	\sum_{i>0}v_i =k \\
+	\sum_{j>0} x_{0j}=1\\
+	x_{ij} \leq v_i\\
+	x_{ij} \leq v_j\\
+	v_i + x_{ij} + x_{ji} \leq v_j + 1\\
+	0 \leq f_{ij} \leq k\\
+	\sum_{j>0} f_{0j}=k \\
+	\sum_{(i,j)} f_{ij} - \sum_{(j,i)} f_{ji} = 1\\
+	f_{i,j}\leq kx_{i,j}
+\end{align}
+
 \end{document}
 
 
