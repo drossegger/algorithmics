@@ -6,14 +6,14 @@
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amssymb}
-
+\numberwithin{equation}{section}
 \title{Algorithmics WS13/14, Programming Exercise}
 \author{Dino Rossegger, Markus Scherer}
 \date{\today}
 \begin{document}
 \maketitle
 \section{MTZ Formulation}
-Let $x_{ij}=1$ if $e_{ij}\in E$ is in the Spanning Tree, else $x_{ij}=0$. Since the graph is undirected, for every edge there are to $x$, $x_ij$ and $x_ji$. The objective function is the same as in the other formulations
+Let $x_{ij}=1$ if $e_{ij}\in E$ is in the Spanning Tree, else $x_{ij}=0$. Since the graph is undirected, for every edge there are to $x$, $x_{ij}$ and $x_{ji}$. The objective function is the same as in the other formulations
 \begin{equation}
 	\min{\sum_i \sum_{j\not=i} c_{ij}x_{ij}}
 \end{equation}
@@ -81,14 +81,18 @@ For every edge $e \in E$ two arcs are introduced. $x_ij$ is $1$ if it is in the 
 	\sum_{(i,j)} x_{ij} = k\\
 	\sum_{i>0}v_i =k \\
 	\sum_{j>0} x_{0j}=1\\
+	\sum_{i>0} x_{i0}=0\\
 	x_{ij} \leq v_i\\
-	x_{ij} \leq v_i\\
+	x_{ij} \leq v_j\\
 	v_i + x_{ij} + x_{ji} \leq v_j + 1\\
 	\sum_{j>0} f_{0j}^l \leq 1 \quad \forall l\in N\setminus\{0\}\\
 	\sum_{i,i\not =l} f_{il}^l \leq 1 \quad \forall l\in N\setminus\{0\}\\
 	0\leq f_{ij}^l \leq x_{i,j}\\
 	\sum_{i,i\not = j}f_{ij}^l - \sum_{i,i\not = j} f_{ji}^l =0 \quad \forall j, l\in N\setminus\{0\}, j\not =l \\
-	\sum_{l=1}^N \sum_{(i,l)} f_{i,l}^l =k
+	\sum_{j\not=l} f_{l,j}^l =0\\
+	\sum_{(i,l)} f_{i,l}^l - v_l=0 \quad \forall l\in N\setminus\{0\} \\
+	\sum_{l=1}^N \sum_{(0,j)} f_{0,j}^l = k\\
+	\sum_{(0,j)} f_{0,j}^l -v_l = 0 \quad \forall l\in N\setminus\{0\}
 \end{align}
 
 \end{document}
