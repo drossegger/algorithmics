@@ -335,6 +335,7 @@ void kMST_ILP::modelMCF()
 	co4.end();
 	co5.end();
 
+	
 
   //(3.6),(3.7)
 	for (int k=0;k<m;k++){ 
@@ -451,7 +452,7 @@ void kMST_ILP::modelMCF()
 				co34+=f[l][*it+m];
 			}
 		}
-		model.add(co34 ==0);
+		model.add(co34 == 0);
 		co34.end();
 	}
 
@@ -493,8 +494,22 @@ void kMST_ILP::modelMCF()
 		co35_0.end();
 		co35_1.end();
 	}*/
-	
 	//(3.15)
+	IloExpr co(env);	
+	for (int l=1;l<n;l++){
+		for(list<u_int>::iterator it=instance.incidentEdges.at(l).begin();it!=instance.incidentEdges.at(l).end();it++){
+			if(instance.edges.at(*it).v1==l && instance.edges.at(*it).v2!=l){
+				co+=f[l][*it+m];
+			}
+			else if(instance.edges.at(*it).v2==l && instance.edges.at(*it).v1!=l){
+				co+=f[l][*it];
+			}
+
+		}
+	}
+		model.add(co==k);
+		co.end();
+	//(3.16)
 	IloExpr co_35(env);
 	for (int l=1;l<n;l++){
 		for(int j=0;j<m;j++){
@@ -512,7 +527,7 @@ void kMST_ILP::modelMCF()
 	model.add(co_35 == k);
 	co_35.end();
 		
-	//(3.16)
+	//(3.17)
 	for (int l=1;l<n;l++){
 		IloExpr co(env);
 		for (list<u_int>::iterator it=instance.incidentEdges.at(0).begin();it!=instance.incidentEdges.at(0).end();it++){
@@ -521,9 +536,20 @@ void kMST_ILP::modelMCF()
 		model.add(co - v[l]==0);
 		co.end();
 	}
+	//(3.18)
+	for(int k=0;k<m;k++){
+		IloExpr co_0(env);
+		IloExpr co_1(env);
+		for(int l=1;l<n;l++){
+			co_0+=f[l][k];
+			co_1+=f[l][k+m];
+		}
+		model.add(co_0>=x[k]);
+		model.add(co_1>=x[k+m]);
+		co_0.end();
+		co_1.end();
+	}
 
-
-	cout << model << endl;
 }
 
 void kMST_ILP::modelMTZ()

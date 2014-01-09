@@ -91,8 +91,10 @@ For every edge $e \in E$ two arcs are introduced. $x_ij$ is $1$ if it is in the 
 	\sum_{i,i\not = j}f_{ij}^l - \sum_{i,i\not = j} f_{ji}^l =0 \quad \forall j, l\in N\setminus\{0\}, j\not =l \\
 	\sum_{j\not=l} f_{l,j}^l =0\\
 	\sum_{(i,l)} f_{i,l}^l - v_l=0 \quad \forall l\in N\setminus\{0\} \\
+	\sum_{l=1}^N \sum_{(i,l)} f_{i,l}^l = k\\
 	\sum_{l=1}^N \sum_{(0,j)} f_{0,j}^l = k\\
-	\sum_{(0,j)} f_{0,j}^l -v_l = 0 \quad \forall l\in N\setminus\{0\}
+	\sum_{(0,j)} f_{0,j}^l -v_l = 0 \quad \forall l\in N\setminus\{0\}\\
+	x_{ij} \leq \sum_{l=1}^N f_{ij}^l
 \end{align}
 
 \end{document}
