@@ -337,7 +337,7 @@ void kMST_ILP::modelMCF()
 
 	
 
-  //(3.6),(3.7)
+ //(3.6),(3.7)
 	for (int k=0;k<m;k++){ 
     const int i = instance.edges.at(k).v1;
     const int j = instance.edges.at(k).v2;
@@ -353,7 +353,6 @@ void kMST_ILP::modelMCF()
     co6_1.end();
     co6_2.end();
 	}
-
   //(3.8)
 	for (int k=0;k<m;k++){ 
     const int i = instance.edges.at(k).v1;
@@ -369,55 +368,52 @@ void kMST_ILP::modelMCF()
     co7_1.end();
     co7_2.end();
 	}
-	//(3.9)
+	//(3.9)(3.10)
 	for (int l=1;l<n; l++){
-		IloExpr co30(env);
+		IloExpr co3_9(env);
+		IloExpr co3_10(env);
 		for (int i=0;i<m;i++){ 
-		if(instance.edges.at(i).v1==0 ){ 
-			co30+=f[l][i]; 
-		}
-		if(instance.edges.at(i).v2==0){
-			co30+=f[l][i+m];
-		}
-		}
-		model.add(co30 <= 1);
-		co30.end();
-	}
-	//(3.10)
-	for (int l=1;l<n;l++){
-		IloExpr co31(env);
-		for(int i=0;i<m;i++){
+			//(3.9)
+			if(instance.edges.at(i).v1==0 ){ 
+				co3_9+=f[l][i]; 
+			}
+			if(instance.edges.at(i).v2==0){
+				co3_9+=f[l][i+m];
+			}
+			//(3.10)
 			if(instance.edges.at(i).v2==l && instance.edges.at(i).v1!=l){
-				co31+=f[l][i];
+				co3_10+=f[l][i];
 			}
 			else if (instance.edges.at(i).v1==l && instance.edges.at(i).v2!=l){
-				co31+=f[l][i+m];
+				co3_10+=f[l][i+m];
 			}
-		}
-		model.add(co31<=1);
-		co31.end();
+					}
+		model.add(co3_9 <= 1);
+		//model.add(co3_10==co3_9);
+		model.add(co3_10<=1);
+		co3_9.end();
+		co3_10.end();
 	}
-	
 	//(3.11)
 	for (int l=1; l<n;l++){
 		for(int i=0;i<m;i++){
-			IloExpr co32_0(env);
-			IloExpr co32_3(env);
-			IloExpr co32_4(env);
-			co32_3=x[i];
-			co32_0=f[l][i];
-			model.add(0<=co32_0);
-			model.add(co32_0 <=co32_3);
-			co32_0.end();
+			IloExpr co3_11_0(env);
+			IloExpr co3_11_3(env);
+			IloExpr co3_11_4(env);
+			co3_11_3=x[i];
+			co3_11_0=f[l][i];
+			model.add(0<=co3_11_0);
+			model.add(co3_11_0 <=co3_11_3);
+			co3_11_0.end();
 
-			co32_4=x[i+m];
-			IloExpr co32_1(env);
-			co32_1=f[l][i+m];
-			model.add(0<=co32_1);
-			model.add(co32_1 <=co32_4);
-			co32_1.end();
-			co32_3.end();
-			co32_4.end();
+			co3_11_4=x[i+m];
+			IloExpr co3_11_1(env);
+			co3_11_1=f[l][i+m];
+			model.add(0<=co3_11_1);
+			model.add(co3_11_1 <=co3_11_4);
+			co3_11_1.end();
+			co3_11_3.end();
+			co3_11_4.end();
 		}
 	}
 	//(3.12)
