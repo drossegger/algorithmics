@@ -740,8 +740,8 @@ bool kMST_ILP::isTree() {
 	for(int i=0;i<m;i++){
     int from = instance.edges.at(i).v1;
     int to = instance.edges.at(i).v2;
-		mat[from][to] = cplex.getValue(x[i]);
-		mat[to][from] = cplex.getValue(x[i+m]);
+		mat[from][to] = 0.9 < cplex.getValue(x[i]);
+		mat[to][from] = 0.9 < cplex.getValue(x[i+m]);
 	}
 
   validEdgeCounter = 0;
