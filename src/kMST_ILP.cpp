@@ -39,7 +39,7 @@ void kMST_ILP::solve()
 		cout << "Branch-and-Bound nodes: " << cplex.getNnodes() << "\n";
 		cout << "Objective value: " << cplex.getObjValue() << "\n";
 		cout << "CPU time: " << Tools::CPUtime() << "\n\n";
-    printX();
+    //printX();
 		cout << "Solution is " << (isTree() ? "valid" : "invalid") << "\n\n";
 		cplex.writeSolution("solution.lp");
 	}
@@ -84,15 +84,15 @@ void kMST_ILP::modelSCF()
 		c[i+m]=instance.edges.at(i).weight;
 	}
 	//f
-	IloIntVarArray f(env,2*m);
+	IloNumVarArray f(env,2*m);
 	for(int i=0;i<m;i++){
 		stringstream myname;
 		myname << "f_" << instance.edges.at(i).v1 << "," <<instance.edges.at(i).v2;
-		f[i]=IloIntVar(env,myname.str().c_str());
+		f[i]=IloNumVar(env,myname.str().c_str());
 		
 		stringstream myname2;
 		myname2 << "f_" << instance.edges.at(i).v2 << "," << instance.edges.at(i).v1;
-		f[i+m]=IloIntVar(env,myname2.str().c_str());
+		f[i+m]=IloNumVar(env,myname2.str().c_str());
 	}
 	//v
 	IloBoolVarArray v(env,n);
