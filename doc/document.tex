@@ -12,14 +12,25 @@
 \date{\today}
 \begin{document}
 \maketitle
-\section{MTZ Formulation}
-Let $x_{ij}=1$ if $e_{ij}\in E$ is in the Spanning Tree, else $x_{ij}=0$. Since the graph is undirected, for every edge there are to $x$, $x_{ij}$ and $x_{ji}$. The objective function is the same as in the other formulations
+\section{General}
+A artificial root vertex $0$ was introduced in the graphs which edges going to all other nodes and the cost function $c_{0j}=0\quad \forall j\in V$. Since the formulations work with directed graphs for every undirected edge $e$, two new edges where introduced, $e_{ij}$ and $e_{ji}$ denoting the corresponding arcs.
+For all Formulations the same objective function was used. $c_{ij}$ denoting the cost function of the arc and $x_{ij}$ being $1$ if the arc is chosen or $0$ otherwise.
 \begin{equation}
 	\min{\sum_i \sum_{j\not=i} c_{ij}x_{ij}}
+\end{equation} 
+$c_{ij}$ denoting the cost function of the arc and $x_{ij}$ being $1$ if the arc is chosen or $0$ otherwise. Therefore a constraint limiting the values $x$ can take was used.
+\begin{equation}
+	x_{ij} \in \{0,1\} \qquad \forall (i,j)
 \end{equation}
+To tighten the constraints, an additional variable $v_i$ was introduced, being $1$ if vertex $i$ is selected and $0$ otherwise.
+\begin{equation}
+	v_i \in\{0,1\} \qquad \forall i=0,\dots,n
+\end{equation}
+
+\section{MTZ Formulation}
 For the Miller-Tucker-Zemlin formulation an order $u_i$ is introduced, it ensures that there is no cycle.
 \begin{equation}
-x_{ij} + u_i \leq u_j + k*(1-x_{ij}) \quad \forall i,j=0,\dots,n
+x_{ij} + u_i \leq u_j + k*(1-x_{ij}) \qquad \forall (i,j)
 \end{equation}
 The start vertex must be the artificial vertex $0$.
 \begin{equation}
@@ -35,13 +46,12 @@ $u_i$ must be between $0$ and $k$ since $k$ vertices are in the tree.
 \end{equation}
 By the tree property $n=m+1$ the number of edges in the tree must be $k$.
 \begin{equation}
-	\sum_{i\geq0} \sum_{j\geq0,j\not =i} x_{ij} = k
+	\sum_{(i,j)} x_{ij} = k
 \end{equation}
 Since there is an order, we are talking about arcs and for every vertex there must be at most one incoming arc.
 \begin{equation}
-	\sum_{i>0} x_{ij}\leq 1 \quad \forall j=1,\dots,n
+	\sum_{i>0} x_{ij}\leq 1 \qquad \forall j=1,\dots,n
 \end{equation}
-Let $v_i=1$ if vertex $i \in k-MST$ and $0$ otherwise.
 The number of vertices in the tree must be $k$.
 \begin{equation}
 	\sum_{i>0}v_i=k
@@ -56,27 +66,43 @@ Whenever an arc is chosen, the incident vertices must have an order.
 	x_{ij} &\leq u_j 
 \end{align}
 \section{SCF Formulation}
-For every edge $e \in E$ two arcs are introduced. $x_ij$ is $1$ if it is in the MST, $0$ otherwise.
+There must be $k$ arcs in the tree (including arc from $0$)
 \begin{equation}
-	\min \sum_{i>0}{ \sum_{j>0,j\not =i}{x_{ij}c_{ij}}}
+	\sum_{(i,j)} x_{ij} = k
 \end{equation}
-\begin{align}
-	\sum_{(i,j)} x_{ij} = k\\
+The number of vertices in the tree must be $k$ ($0$ not included)
+\begin{equation}
 	\sum_{i>0}v_i =k \\
+\end{equation}
+There must be exactly $1$ arc goint out of $0$ in the solution
+\begin{equation}
 	\sum_{j>0} x_{0j}=1\\
+\end{equation}
+If an arc is selected, vertices incident to it must be selected too
+\begin{equation}
 	x_{ij} \leq v_i\\
 	x_{ij} \leq v_j\\
+\end{equation}
+There can be either a forward or a backward arc in the solution, not both.
+\begin{equation}
 	v_i + x_{ij} + x_{ji} \leq v_j + 1\\
+\end{equation}
+The flow must be at most $k$, and at least $0$
+\begin{equation}
 	0 \leq f_{ij} \leq k\\
 	\sum_{j>0} f_{0j}=k \\
+\end{equation}
+Every vertex in the solution consumes $1$ flow.
+\begin{equation}
 	\sum_{(i,j)} f_{ij} - \sum_{(j,i)} f_{ji} = 1\\
+\end{equation}
+The flow going through an arc can be at most $k$.
+\begin{equation}
 	f_{i,j}\leq kx_{i,j}
-\end{align}
+\end{equation}
 
 \section{MCF Formulation}
-\begin{equation}
-	\min \sum_{i>0}{ \sum_{j>0,j\not =i}{x_{ij}c_{ij}}}
-\end{equation}
+Most of the constraints are the same as in the single commodity flow formulation.
 \begin{align}
 	\sum_{(i,j)} x_{ij} = k\\
 	\sum_{i>0}v_i =k \\
@@ -85,17 +111,42 @@ For every edge $e \in E$ two arcs are introduced. $x_ij$ is $1$ if it is in the 
 	x_{ij} \leq v_i\\
 	x_{ij} \leq v_j\\
 	v_i + x_{ij} + x_{ji} \leq v_j + 1\\
-	\sum_{j>0} f_{0j}^l \leq 1 \quad \forall l\in N\setminus\{0\}\\
-	\sum_{i,i\not =l} f_{il}^l \leq 1 \quad \forall l\in N\setminus\{0\}\\
-	0\leq f_{ij}^l \leq x_{i,j}\\
-	\sum_{i,i\not = j}f_{ij}^l - \sum_{i,i\not = j} f_{ji}^l =0 \quad \forall j, l\in N\setminus\{0\}, j\not =l \\
-	\sum_{j\not=l} f_{l,j}^l =0\\
-	\sum_{(i,l)} f_{i,l}^l - v_l=0 \quad \forall l\in N\setminus\{0\} \\
-	\sum_{l=1}^N \sum_{(i,l)} f_{i,l}^l = k\\
-	\sum_{l=1}^N \sum_{(0,j)} f_{0,j}^l = k\\
-	\sum_{(0,j)} f_{0,j}^l -v_l = 0 \quad \forall l\in N\setminus\{0\}\\
-	x_{ij} \leq \sum_{l=1}^N f_{ij}^l
 \end{align}
+The commodities going out of vertex $0$ can be at most $1$ each and the sum of all commodities must be $k$.
+\begin{equation}
+	\sum_{j>0} f_{0j}^l \leq 1 \qquad \forall l\in [1,n]\\
+	\sum_{l=1}^n \sum_{(0,j)} f_{0,j}^l = k\\
+\end{equation}
+The sum of flows on commodity $l$ flowing into vertex $l$ is at most $1$.
+\begin{equation}
+\sum_{i,i\not =l} f_{il}^l \leq 1 \qquad \forall l\in [1,n]\\
+\end{equation}
+If there is a flow on an arc, the arc must be selected.
+\begin{equation}
+0\leq f_{ij}^l \leq x_{i,j} \qquad \forall (i,j), \forall l \in [0,n]
+\end{equation}
+All vertices which are not the target of the commodity can not consume a flow.
+\begin{equation}
+\sum_{i,i\not = j}f_{ij}^l - \sum_{i,i\not = j} f_{ji}^l =0 \qquad \forall j, l\in [1,n], j\not =l \\
+\end{equation}
+If $l$ is target of some flow, the outgoing flow on its commodity must be $0$
+\begin{equation}
+\sum_{j\not=l} f_{l,j}^l =0\\
+\end{equation}
+If there is flow incoming to vertex $l$ on its commodity, the vertex must be selected
+\begin{equation}
+\sum_{(i,l)} f_{i,l}^l - v_l=0 \qquad \forall l\in [1,n], i\in[0,n]\\
+\end{equation}
+The sum of flows on all commodities must be $k$
+\begin{equation}
+	\sum_{l=1}^n \sum_{(i,l)} f_{i,l}^l = k\\
+\end{equation}
+
+%	\sum_{(0,j)} f_{0,j}^l -v_l = 0 \quad \forall l\in N\setminus\{0\}\\
+If an arc is selected, there must be a flow on the arc.
+\begin{equation}
+x_{ij} \leq \sum_{l=1}^n f_{ij}^l
+\end{equation}
 
 \end{document}
 
