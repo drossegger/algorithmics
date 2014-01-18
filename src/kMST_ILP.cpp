@@ -102,7 +102,7 @@ void kMST_ILP::modelSCF()
 		v[i] = IloBoolVar(env, myname.str().c_str());
 	}
 
-	//objective function (1)
+	//objective function (1.1)
 	IloExpr objfunc(env);
 	for (int i=0;i<m; i++){
 		objfunc +=x[i]*c[i];
@@ -111,7 +111,7 @@ void kMST_ILP::modelSCF()
 	model.add(IloMinimize(env,objfunc));
 	objfunc.end();
 
-  //(2)
+  //(3.1)
 	IloExpr co2(env);
 	for(int i=0;i<m;i++){
 		co2 += x[i] + x[i+m];
@@ -119,7 +119,7 @@ void kMST_ILP::modelSCF()
   model.add(co2 == k);
   co2.end();
 
-  //(3)
+  //(3.2)
 	IloExpr co3(env);
 	for(int i=1;i<n;i++){
 		co3 += v[i];
@@ -127,7 +127,7 @@ void kMST_ILP::modelSCF()
   model.add(co3 == k);
   co3.end();
 
-  //(4)
+  //(3.3)
 	IloExpr co4(env); 
 	for (int i=0;i<m;i++){ 
 		if(instance.edges.at(i).v1==0 || instance.edges.at(i).v2==0){ 
@@ -138,7 +138,7 @@ void kMST_ILP::modelSCF()
 	model.add(co4 == 1);
 	co4.end();
 
-  //(5) and (6)
+  //(3.4) and (3.5)
 	for (int k=0;k<m;k++){ 
     const int i = instance.edges.at(k).v1;
     const int j = instance.edges.at(k).v2;
@@ -155,7 +155,7 @@ void kMST_ILP::modelSCF()
     co6_2.end();
 	}
 
-  //(7)
+  //(3.6)
 	for (int k=0;k<m;k++){ 
     const int i = instance.edges.at(k).v1;
     const int j = instance.edges.at(k).v2;
@@ -171,7 +171,7 @@ void kMST_ILP::modelSCF()
     co7_2.end();
 	}
 
-  //(8)
+  //(3.7)
 	for (int i=0;i<m;i++){ 
     IloExpr co8_1 = f[i];
     IloExpr co8_2 = f[i+m];
@@ -182,7 +182,7 @@ void kMST_ILP::modelSCF()
     co8_2.end();
 	}
 
-  //(9)
+  //(3.8)
 	IloExpr co9(env); 
 	for (int i=0;i<m;i++){ 
 		if(instance.edges.at(i).v1==0){ 
@@ -195,7 +195,7 @@ void kMST_ILP::modelSCF()
 	model.add(co9 == k);
 	co9.end();
 
-//  //(10)
+  //(3.9)
   for(int i=1; i < n; i++) {
 		IloNumExpr co10_1(env);
 		IloNumExpr co10_2(env);
@@ -219,7 +219,7 @@ void kMST_ILP::modelSCF()
 		co10_2.end();
 	}
 
-  // (11)
+  // (3.10)
   for (int i=0;i<m;i++) { 
     if(instance.edges.at(k).v1 == instance.edges.at(k).v2) {
       continue;

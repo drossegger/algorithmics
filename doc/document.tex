@@ -73,15 +73,17 @@ There must be $k$ arcs in the tree (including arc from $0$)
 \end{equation}
 The number of vertices in the tree must be $k$ ($0$ not included)
 \begin{equation}
-	\sum_{i>0}v_i =k \\
+	\sum_{i \geq 1}v_i =k \\
 \end{equation}
 There must be exactly $1$ arc goint out of $0$ in the solution
 \begin{equation}
-	\sum_{j>0} x_{0j}=1\\
+	\sum_{j \geq 1} x_{0j}=1\\
 \end{equation}
 If an arc is selected, vertices incident to it must be selected too
 \begin{equation}
 	x_{ij} \leq v_i\\
+\end{equation}
+\begin{equation}
 	x_{ij} \leq v_j\\
 \end{equation}
 There can be either a forward or a backward arc in the solution, not both.
@@ -91,11 +93,14 @@ There can be either a forward or a backward arc in the solution, not both.
 The flow must be at most $k$, and at least $0$
 \begin{equation}
 	0 \leq f_{ij} \leq k\\
+\end{equation}
+Exactly $k$ units of flow are sent out from node $0$.
+\begin{equation}
 	\sum_{j>0} f_{0j}=k \\
 \end{equation}
 Every vertex in the solution consumes $1$ flow.
 \begin{equation}
-	\sum_{(i,j)} f_{ij} - \sum_{(j,i)} f_{ji} = 1\\
+  \forall j \in V \hspace{30pt}	\sum_{(i,j)} f_{ij} - \sum_{(j,i)} f_{ji} = v_j\\
 \end{equation}
 The flow going through an arc can be at most $k$.
 \begin{equation}
