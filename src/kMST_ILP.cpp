@@ -213,7 +213,7 @@ void kMST_ILP::modelSCF()
 				co10_2 += f[*it];
 			}
 		}
-		model.add(co10_1 == IloMin(1,co10_2));
+		model.add(co10_1 == v[i]);
 
 		co10_1.end();
 		co10_2.end();
