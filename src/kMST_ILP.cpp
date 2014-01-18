@@ -388,9 +388,9 @@ void kMST_ILP::modelMCF()
 				co3_10+=f[l][i+m];
 			}
 					}
-		model.add(co3_9 <= 1);
+		model.add(co3_9 <= v[l]);
 		//model.add(co3_10==co3_9);
-		model.add(co3_10<=1);
+		model.add(co3_10<=v[l]);
 		co3_9.end();
 		co3_10.end();
 	}
@@ -496,6 +496,7 @@ void kMST_ILP::modelMCF()
 		co35_1.end();
 	}*/
 	//(3.15)
+  
 	IloExpr co(env);	
 	for (int l=1;l<n;l++){
 		for(list<u_int>::iterator it=instance.incidentEdges.at(l).begin();it!=instance.incidentEdges.at(l).end();it++){
@@ -510,6 +511,7 @@ void kMST_ILP::modelMCF()
 	}
 		model.add(co==k);
 		co.end();
+    
 	//(3.16)
 	IloExpr co_35(env);
 	for (int l=1;l<n;l++){
@@ -527,6 +529,7 @@ void kMST_ILP::modelMCF()
 	}
 	model.add(co_35 == k);
 	co_35.end();
+  
 		
 	//(3.17)
 	for (int l=1;l<n;l++){
