@@ -39,7 +39,7 @@ The start vertex must be the artificial vertex $0$.
 \end{equation}
 There must be exactly one arc from the artificial vertex $0$ to any other vertex in the tree.
 \begin{equation}
-	\sum_{j>0} x_{0j} = 1
+	\sum_{j\geq1} x_{0j} = 1
 \end{equation}
 $u_i$ must be between $0$ and $k$ since $k$ vertices are in the tree.
 \begin{equation}
@@ -110,7 +110,7 @@ Exactly $k$ units of flow are sent out from node $0$.
 \end{equation}
 Every vertex in the solution consumes $1$ flow.
 \begin{equation}
-  \forall j \in V \hspace{30pt}	\sum_{(i,j)} f_{ij} - \sum_{(j,i)} f_{ji} = v_j\\
+  \sum_{(i,j)} f_{ij} - \sum_{(j,i)} f_{ji} = v_j \qquad \forall j=1,\dots,n\\
 \end{equation}
 The flow going through an arc can be at most $k$.
 \begin{equation}
