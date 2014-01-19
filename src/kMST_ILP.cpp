@@ -602,7 +602,7 @@ void kMST_ILP::modelMTZ()
 		v[i] = IloBoolVar(env, myname.str().c_str());
 	}
 
-	//objective function (1)
+	//objective function (1.1)
 	IloExpr objfunc(env);
 	for (int i=0;i<m; i++){
 		objfunc +=x[i]*c[i];
@@ -611,15 +611,15 @@ void kMST_ILP::modelMTZ()
 	model.add(IloMinimize(env,objfunc));
 	objfunc.end();
 
-  //(2)
+  //(2.1)
 	for (int i=0;i<m;i++){
 		model.add(x[i]+u[instance.edges.at(i).v1] <= u[instance.edges.at(i).v2] + k*(1-x[i]));
 
 		model.add(x[i+m]+u[instance.edges.at(i).v2] <= u[instance.edges.at(i).v1] + k*(1-x[i+m]));
 	}
-	//(3)
+	//(2.2)
 	model.add(u[0]==0);
-//(4) 
+  //(2.3) 
 	IloExpr co4(env); 
 	for (int i=0;i<m;i++){ 
 		if(instance.edges.at(i).v1==0 /*or instance.edges.at(i).v2==0*/){ 
@@ -631,13 +631,13 @@ void kMST_ILP::modelMTZ()
 	}
 	model.add(co4 == 1);
 	co4.end();
-	//(5)	
+	//(2.4)	
 	for (int i=1;i<n;i++){
 		model.add(0<=u[i]);
 		model.add(u[i]<=k);
 	}
 
-	//(6)
+	//(2.5)
 	IloExpr co6(env);
 	for (int i=0;i<2*m;i++){
 				co6+=x[i];
@@ -645,7 +645,7 @@ void kMST_ILP::modelMTZ()
 	model.add(co6 == k);
 	co6.end();
 
-	//(7)
+	//(2.6)
 	for(int i=1;i<n;i++){
 		IloExpr co7(env);
 		for(list<u_int>::iterator it=instance.incidentEdges.at(i).begin();it != instance.incidentEdges.at(i).end();++it){
@@ -657,21 +657,21 @@ void kMST_ILP::modelMTZ()
 		model.add(co7 <= 1);
 		co7.end();
 	}
-	//(8)
+	//(2.7)
 	IloExpr co8(env);
 	for(int i=0;i<n;i++){
 		co8+=v[i];
 	}
 	model.add(co8==k);
 	co8.end();
-	//(9)
+	//(2.8)
 	for(int i=0;i<n;i++){
 		IloExpr co9(env);
 		co9=u[i];
 		model.add(co9<=k*v[i]);
 		co9.end();
 	}
-	//(10)-(11)
+	//(2.9)-(2.10)
 	for(int i=0;i<m;i++){
 			if(instance.edges.at(i).v1!=0 and instance.edges.at(i).v2!=0){
 				IloExpr co10(env),co11(env),co11_1(env),co10_1(env);
@@ -686,7 +686,7 @@ void kMST_ILP::modelMTZ()
 				co10.end();co11.end();co11_1.end();co10_1.end();
 			}
 	}
-	//(12)
+	//(2.11)
 	IloExpr co12(env);
 	for (int i=0;i<n;i++){
 		co12+=u[i];
@@ -694,7 +694,7 @@ void kMST_ILP::modelMTZ()
 	model.add(co12 == (k*(k+1))/2);
 	co12.end();
 
-	//add
+	//2.12
 	for (int i=0;i<m;i++){
 	IloExpr coAdd(env);
 	coAdd+=x[i];

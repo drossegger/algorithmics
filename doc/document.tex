@@ -51,11 +51,11 @@ By the tree property $n=m+1$ the number of edges in the tree must be $k$.
 \end{equation}
 Since there is an order, we are talking about arcs and for every vertex there must be at most one incoming arc.
 \begin{equation}
-	\sum_{i>0} x_{ij}\leq 1 \qquad \forall j=1,\dots,n
+	\sum_{i\geq 1} x_{ij}\leq 1 \qquad \forall j=1,\dots,n
 \end{equation}
-The number of vertices in the tree must be $k$.
+The number of vertices in the tree (excluding the start node) must be $k$.
 \begin{equation}
-	\sum_{i>0}v_i=k
+	\sum_{i\geq 1}v_i=k
 \end{equation}
 Only $v_i \in k-MST$ must have $u_i>0$.
 \begin{equation}
@@ -66,6 +66,16 @@ Whenever an arc is chosen, the incident vertices must have an order.
 	x_{ij} &\leq u_i \\
 	x_{ij} &\leq u_j 
 \end{align}
+The sum of orders $u$ must be exactly $\frac{k(k+1)}{2}$.
+\begin{equation}
+	\sum_{j \geq 0} u_{j}=\frac{k(k+1)}{2} \\
+\end{equation}
+Whenever an arc is chosen, the corresponding arc in the other direction cannot be chosen.
+\begin{equation}
+	x_{ij} + x_{ij}\leq 1 \\
+\end{equation}
+
+
 \section{SCF Formulation}
 There must be $k$ arcs in the tree (including arc from $0$)
 \begin{equation}
@@ -75,7 +85,7 @@ The number of vertices in the tree must be $k$ ($0$ not included)
 \begin{equation}
 	\sum_{i \geq 1}v_i =k \\
 \end{equation}
-There must be exactly $1$ arc goint out of $0$ in the solution
+There must be exactly $1$ arc going out of $0$ in the solution
 \begin{equation}
 	\sum_{j \geq 1} x_{0j}=1\\
 \end{equation}
