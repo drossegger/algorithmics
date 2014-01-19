@@ -9,17 +9,18 @@
 \usepackage{multirow}
 \numberwithin{equation}{section}
 \title{Algorithmics WS13/14, Programming Exercise}
-\author{Dino Rossegger, Markus Scherer}
+\author{Dino Rossegger \emph{0926471}\\ Markus Scherer \emph{1028046}}
 \date{\today}
 \begin{document}
 \maketitle
 \section{General}
 A artificial root vertex $0$ was introduced in the graphs which edges going to all other nodes and the cost function $c_{0j}=0\quad \forall j\in V$. Since the formulations work with directed graphs for every undirected edge $e$, two new edges where introduced, $e_{ij}$ and $e_{ji}$ denoting the corresponding arcs.
-For all Formulations the same objective function was used. $c_{ij}$ denoting the cost function of the arc and $x_{ij}$ being $1$ if the arc is chosen or $0$ otherwise.
+For all Formulations the same objective function was used.
 \begin{equation}
 	\min{\sum_i \sum_{j\not=i} c_{ij}x_{ij}}
 \end{equation} 
-$c_{ij}$ denoting the cost function of the arc and $x_{ij}$ being $1$ if the arc is chosen or $0$ otherwise. Therefore a constraint limiting the values $x$ can take was used.
+$c_{ij}$ is denoting the cost of the arc and $x_{ij}$ being $1$ if the arc is chosen or $0$ otherwise. 
+Therefore a constraint limiting the values $x$ can take was used.
 \begin{equation}
 	x_{ij} \in \{0,1\} \qquad \forall (i,j)
 \end{equation}
@@ -77,6 +78,11 @@ Whenever an arc is chosen, the corresponding arc in the other direction cannot b
 
 
 \section{SCF Formulation}
+A commodity is introduced. This commodity can flow along each 
+arc and results thus in the following decision variables:
+\begin{equation}
+  f_{ij} \qquad \forall (i,j)
+\end{equation}
 There must be $k$ arcs in the tree (including arc from $0$)
 \begin{equation}
 	\sum_{(i,j)} x_{ij} = k
@@ -114,46 +120,55 @@ Every vertex in the solution consumes $1$ flow.
 \end{equation}
 The flow going through an arc can be at most $k$.
 \begin{equation}
-	f_{i,j}\leq kx_{i,j}
+	f_{ij}\leq kx_{ij}
 \end{equation}
 
 \section{MCF Formulation}
+For every node a different commodity is introduced. These commodities can flow along each 
+arc and result thus in the following decision variables:
+\begin{equation}
+  f_{ij}^l \in \{0,1\} \qquad \forall (i,j) \quad \forall l = 1,\dots, n\\
+\end{equation}
+
 Most of the constraints are the same as in the single commodity flow formulation.
 \begin{align}
 	\sum_{(i,j)} x_{ij} = k\\
-	\sum_{i>0}v_i =k \\
-	\sum_{j>0} x_{0j}=1\\
-	\sum_{i>0} x_{i0}=0\\
+	\sum_{i\geq1}v_i =k \\
+	\sum_{j\geq1} x_{0j}=1\\
+	\sum_{i\geq1} x_{i0}=0\\
 	x_{ij} \leq v_i\\
 	x_{ij} \leq v_j\\
-	v_i + x_{ij} + x_{ji} \leq v_j + 1\\
+	v_i + x_{ij} + x_{ji} \leq v_j + 1
 \end{align}
-The commodities going out of vertex $0$ can be at most $1$ each and the sum of all commodities must be $k$.
+The commodities of type $l$ going out of vertex $0$ must be exactly $v_l$ (only commodities of selected nodes are sent out) 
+and the sum of all sent from $0$ commodities must be $k$.
 \begin{equation}
-	\sum_{j>0} f_{0j}^l \leq 1 \qquad \forall l\in [1,n]\\
-	\sum_{l=1}^n \sum_{(0,j)} f_{0,j}^l = k\\
+	\sum_{j\geq1} f_{0j}^l = v_l \qquad \forall l= 1,\dots, n
 \end{equation}
-The sum of flows on commodity $l$ flowing into vertex $l$ is at most $1$.
 \begin{equation}
-\sum_{i,i\not =l} f_{il}^l \leq 1 \qquad \forall l\in [1,n]\\
+	\sum_{l=1}^n \sum_{(0,j)} f_{0j}^l = k\\
+\end{equation}
+The sum of flows on commodity $l$ flowing into vertex $l$ is at most $v_l$.
+\begin{equation}
+\sum_{i,i\not =l} f_{il}^l \leq v_l \qquad \forall l = 1,\dots,n\\
 \end{equation}
 If there is a flow on an arc, the arc must be selected.
 \begin{equation}
-0\leq f_{ij}^l \leq x_{i,j} \qquad \forall (i,j), \forall l \in [0,n]
+0\leq f_{ij}^l \leq x_{ij} \qquad \forall (i,j) \quad \forall l = 0,\ldots,n
 \end{equation}
 All vertices which are not the target of the commodity can not consume a flow.
 \begin{equation}
-\sum_{i,i\not = j}f_{ij}^l - \sum_{i,i\not = j} f_{ji}^l =0 \qquad \forall j, l\in [1,n], j\not =l \\
+\sum_{i,i\not = j}f_{ij}^l - \sum_{i,i\not = j} f_{ji}^l =0 \qquad \forall j, l = 1,\dots,n \quad j\not =l \\
 \end{equation}
-If $l$ is target of some flow, the outgoing flow on its commodity must be $0$
+$v_l$ cannot send out flow of it's own commodity.
 \begin{equation}
-\sum_{j\not=l} f_{l,j}^l =0\\
+\sum_{j\not=l} f_{lj}^l =0\\
 \end{equation}
 If there is flow incoming to vertex $l$ on its commodity, the vertex must be selected
 \begin{equation}
-\sum_{(i,l)} f_{i,l}^l - v_l=0 \qquad \forall l\in [1,n], i\in[0,n]\\
+\sum_{(i,l)} f_{il}^l - v_l=0 \qquad \forall l = 1,\dots,n \quad \forall i = 1,\dots,n\\
 \end{equation}
-The sum of flows on all commodities must be $k$
+The sum of incoming flows matching a node, over all commodities, must be $k$
 \begin{equation}
 	\sum_{l=1}^n \sum_{(i,l)} f_{i,l}^l = k\\
 \end{equation}
@@ -165,6 +180,16 @@ x_{ij} \leq \sum_{l=1}^n f_{ij}^l
 \end{equation}
 
 \section{Results}
+
+SCF is the only formulation that solves all instances. MTZ seems to have advantages over SCF with
+smaller $k$-values but fails to solve the last configuration (after several hours the laptop
+used for the benchmarks became unresponsive, possibly due overheating issues). MTZ also uses more
+branch-and-bound-nodes.
+
+Our MCF-Formulation is not able to solve all instances (for \emph{g06} it fails to prove optimality,
+in the time we granted to it, although the optimal value is found, for \emph{g07} and \emph{g08} the
+program crashes after exhausting the memory of the test computer (8GB)).
+
 \input{results.tex}
 
 \end{document}
